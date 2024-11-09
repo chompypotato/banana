@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simple Map Game</title>
+  <style>
+    canvas { 
+      background-color: #333; 
+      display: block;
+      margin: 20px auto;
+      border: 2px solid #000;
+    }
+  </style>
+</head>
+<body>
+
+  <canvas id="gameCanvas" width="320" height="240"></canvas>
+
+  <script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+
+    const TILE_SIZE = 30;
+    const gameMap = [
+      [1, 1, 1, 1, 1, 1, 1, 0],
+      [1, 0, 0, 0, 0, 0, 0, 1],
+      [1, 0, 1, 1, 1, 0, 0, 1],
+      [1, 0, 1, 2, 1, 0, 0, 1],
+      [1, 0, 1, 1, 1, 0, 0, 1],
+      [1, 0, 0, 0, 0, 0, 0, 1],
+      [1, 1, 1, 1, 1, 1, 1, 1]
+    ];
+    let playerPosition = { x: 3, y: 3 }; // Starting at the spawn point (2)
+
+    // Draw the game map
+    function drawMap() {
+      for (let y = 0; y < gameMap.length; y++) {
+        for (let x = 0; x < gameMap[y].length; x++) {
+          if (gameMap[y][x] === 1) {
+            ctx.fillStyle = 'black'; // Block
+          } else if (gameMap[y][x] === 0) {
+            ctx.fillStyle = 'white'; // Air
+          } else if (gameMap[y][x] === 2) {
+            ctx.fillStyle = 'green'; // Spawn point
+          }
+          ctx.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+        }
+      }
+    }
+
+    // Draw the player
+    function drawPlayer() {
+      ctx.fillStyle = 'blue';
+      ctx.fillRect(playerPosition.x * TILE_SIZE, playerPosition.y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+    }
+
+    // Handle player movement
+    function movePlayer(dx, dy) {
+      const newX = playerPosition.x + dx;
+      const newY = playerPosition.y + dy;
+      
+      // Check map boundaries and if it's a block (1)
+      if (gameMap[newY] && gameMap[newY][newX] !== undefined && gameMap[newY][newX] !== 1) {
+        playerPosition.x = newX;
+        playerPosition.y = newY;
+      }
+    }
+
+    // Listen for arrow key presses to move the player
+    window.addEventListener('keydown', (e) => {
+      switch (e.key) {
+        case 'ArrowUp': movePlayer(0, -1); break;
+        case 'ArrowDown': movePlayer(0, 1); break;
+        case 'ArrowLeft': movePlayer(-1, 0); break;
+        case 'ArrowRight': movePlayer(1, 0); break;
+      }
+      draw(); // Redraw map and player on every move
+    });
+
+    // Main draw function
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      drawMap();
+      drawPlayer();
+    }
+
+    // Initial draw
+    draw();
+  </script>
+
+</body>
+</html>
